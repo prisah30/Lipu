@@ -1,0 +1,255 @@
+
+<style>
+  @keyframes flap-open {
+    0% { transform: rotateX(0deg); }
+    100% { transform: rotateX(-180deg); }
+  }
+  @keyframes letter-rise {
+    0% { transform: translateY(0); opacity: 0; }
+    100% { transform: translateY(-220px); opacity: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1.2); }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  .scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem 2rem;
+    min-height: 600px;
+    font-family: var(--font-sans, sans-serif);
+    background: transparent;
+  }
+  .title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #A07C20;
+    letter-spacing: 0.03em;
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  .envelope-wrap {
+    position: relative;
+    width: 320px;
+    height: 220px;
+    cursor: pointer;
+    perspective: 800px;
+  }
+  .envelope { position: relative; width: 320px; height: 220px; }
+  .env-body {
+    position: absolute;
+    bottom: 0;
+    width: 320px;
+    height: 180px;
+    background: #FDF6C8;
+    border: 1.5px solid #E8D87A;
+    border-radius: 4px 4px 8px 8px;
+    overflow: hidden;
+  }
+  .env-body-inner-left {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 0 180px 160px;
+    border-color: transparent transparent #F5EDAA transparent;
+  }
+  .env-body-inner-right {
+    position: absolute;
+    bottom: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 160px 180px 0;
+    border-color: transparent #F5EDAA transparent transparent;
+  }
+  .env-body-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 90px;
+    background: #EFE080;
+    clip-path: polygon(0 100%, 50% 0%, 100% 100%);
+  }
+  .env-flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 320px;
+    height: 130px;
+    transform-origin: top center;
+    transform-style: preserve-3d;
+    z-index: 10;
+  }
+  .env-flap-shape {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: #F9F0A0;
+    border: 1.5px solid #E0CC60;
+    border-bottom: none;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    border-radius: 4px 4px 0 0;
+  }
+  .env-flap.opened { animation: flap-open 0.6s ease forwards; }
+  .seal {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    background: #F0DC6A;
+    border-radius: 50%;
+    border: 2px solid #C8A820;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    z-index: 20;
+    transition: opacity 0.3s;
+    color: #A07C20;
+  }
+  .seal.hidden { opacity: 0; }
+  .letter-card {
+    position: absolute;
+    top: 30px; left: 20px;
+    width: 280px;
+    background: #FEFCEE;
+    border: 1px solid #EDE490;
+    border-radius: 4px;
+    padding: 18px 20px;
+    font-size: 12.5px;
+    line-height: 1.75;
+    color: #5a4810;
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(0);
+  }
+  .letter-card.risen { animation: letter-rise 0.7s ease 0.5s forwards; }
+  .letter-card p { margin-bottom: 10px; }
+  .letter-card p:last-child { margin-bottom: 0; }
+  .letter-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #A07C20;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .open-hint {
+    margin-top: 1.5rem;
+    font-size: 12px;
+    color: #A07C20;
+    opacity: 0.75;
+    text-align: center;
+    animation: fade-in 1s ease 0.5s both;
+  }
+  .full-letter {
+    display: none;
+    max-width: 380px;
+    background: #FEFCEE;
+    border: 1px solid #EDE490;
+    border-radius: 8px;
+    padding: 28px 28px 24px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #3a2e08;
+    animation: fade-in 0.5s ease both;
+    margin-top: 1rem;
+  }
+  .full-letter p { margin-bottom: 12px; }
+  .full-letter p:last-child { margin-bottom: 0; }
+  .full-letter .fl-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #A07C20;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .sign-off {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid #EDE490;
+    color: #A07C20;
+    font-weight: 500;
+    font-size: 13.5px;
+  }
+  .sparkle {
+    position: absolute;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+  .sparkle-1 { top: 10px; left: 40px; background: #F5E87A; animation-delay: 0s; }
+  .sparkle-2 { top: 30px; right: 50px; background: #EDD870; animation-delay: 0.4s; }
+  .sparkle-3 { bottom: 20px; left: 60px; background: #FAF0A0; animation-delay: 0.8s; }
+  .sparkle-4 { bottom: 10px; right: 40px; background: #F0E060; animation-delay: 1.1s; }
+</style>
+
+<div class="scene">
+  <div class="title">my one plus found a plus one</div>
+
+  <div id="envelope-stage">
+    <div class="envelope-wrap" onclick="openEnvelope()">
+      <div class="envelope">
+        <div class="sparkle sparkle-1"></div>
+        <div class="sparkle sparkle-2"></div>
+        <div class="sparkle sparkle-3"></div>
+        <div class="sparkle sparkle-4"></div>
+
+        <div class="letter-card" id="letter-peek">
+          <div class="letter-title">for the happy couple</div>
+          <p>i hate to say it but that tarot card reader in new york called it</p>
+          <p>congratulations you two!!</p>
+        </div>
+
+        <div class="env-body">
+          <div class="env-body-inner-left"></div>
+          <div class="env-body-inner-right"></div>
+          <div class="env-body-bottom"></div>
+        </div>
+        <div class="env-flap" id="flap">
+          <div class="env-flap-shape"></div>
+          <div class="seal" id="seal">&#10084;</div>
+        </div>
+      </div>
+    </div>
+    <div class="open-hint" id="hint">tap to open</div>
+  </div>
+
+  <div class="full-letter" id="full-letter">
+    <div class="fl-title">for the happy couple</div>
+    <p>i hate to say it but that tarot card reader in new york called it</p>
+    <p>congratulations you two!!</p>
+    <p>like genuinely, i've had a front row seat to this whole story. from friends, to whatever you were, to everything you are now. i've seen the versions of you before you even knew what you were to each other. and i think somewhere deep down, we all knew. even when it was complicated, even through the ups and downs, you both handled it with so much grace. no drama, no mess. just two people quietly finding their way to each other.</p>
+    <p>that's rare. you're rare.</p>
+    <p>Riken, you're everything she deserves. and you've always made me feel like family when i showed up at your place with a suitcase and zero warning, so you're stuck with me now too. congratulations on that.</p>
+    <p>and you, lipu, my girl, my person, 15+ years, i am so proud of you. this is exactly what it looks like when something is truly meant to be. no forcing it, no rushing it. just when the time was right, there it was.</p>
+    <p>the tarot reader knew. i knew. and now the whole world gets to know too.</p>
+    <p>i love you both so much. so happy for you today.</p>
+    <div class="sign-off">
+      love you two always,<br>PS
+    </div>
+  </div>
+</div>
+
+<script>
+  var opened = false;
+  function openEnvelope() {
+    if (opened) return;
+    opened = true;
+    document.getElementById('flap').classList.add('opened');
+    document.getElementById('seal').classList.add('hidden');
+    document.getElementById('letter-peek').classList.add('risen');
+    document.getElementById('hint').style.display = 'none';
+    setTimeout(function() {
+      document.getElementById('envelope-stage').style.display = 'none';
+      document.getElementById('full-letter').style.display = 'block';
+    }, 1400);
+  }
+</script>
